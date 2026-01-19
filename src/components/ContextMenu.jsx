@@ -27,6 +27,10 @@ export default function ContextMenu({ x, y, type, onClose, onAction }) {
         >
             {type === 'node' && (
                 <>
+                    <div className="menu-item" onClick={() => onAction('properties')}>
+                        Propiedades
+                    </div>
+                    <div className="separator"></div>
                     <div className="menu-item" onClick={() => onAction('duplicate')}>
                         Duplicar
                     </div>

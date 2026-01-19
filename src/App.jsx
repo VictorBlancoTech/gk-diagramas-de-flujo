@@ -2,7 +2,8 @@ import { useState, useCallback } from 'react'
 import Sidebar from './components/Sidebar'
 import Canvas from './components/Canvas'
 import CodeEditor from './components/CodeEditor'
-import ContextMenu from './components/ContextMenu' // [NEW]
+import ContextMenu from './components/ContextMenu'
+import PropertiesModal from './components/PropertiesModal' // [NEW]
 import { generateMermaid, parseMermaid } from './utils/mermaidHelper'
 
 function App() {
@@ -14,15 +15,29 @@ function App() {
   const [isCodeOpen, setIsCodeOpen] = useState(false);
   const [mermaidCode, setMermaidCode] = useState('');
 
-  // [NEW] Context Menu State
+  // Context Menu State
   const [contextMenu, setContextMenu] = useState(null);
+
+  // [NEW] Properties Modal State
+  const [propertiesModal, setPropertiesModal] = useState({ isOpen: false, nodeId: null });
 
   const handleAddNode = (type, position) => {
     const newNode = {
       id: crypto.randomUUID(),
       type,
       position,
-      data: { label: type === 'decision' ? '¿Decisión?' : (type === 'start' ? 'Inicio' : 'Proceso') }
+      data: {
+        label: type === 'decision' ? '¿Decisión?' : (type === 'start' ? 'Inicio' : 'Proceso'),
+        // Initialize score props
+        scoreMode: false,
+        score: 5.0,
+        benefit: 5,
+        knowledge: 1.0,
+        harm: 0,
+        irreversibility: 1.0,
+        positiveNotes: '',
+        negativeNotes: ''
+      }
     }
     setNodes((prev) => [...prev, newNode])
   }
@@ -62,7 +77,7 @@ function App() {
     }
   };
 
-  // [NEW] Context Menu Handlers
+  // Context Menu Handlers
   const handleContextMenu = (e, type, id) => {
     e.preventDefault();
     setContextMenu({
@@ -71,6 +86,23 @@ function App() {
       type,
       targetId: id
     });
+  };
+
+  // [NEW] Properties Handlers
+  const handleOpenProperties = (nodeId) => {
+    setPropertiesModal({ isOpen: true, nodeId });
+  };
+
+  const handleSaveProperties = (newProps) => {
+    setNodes(prev => prev.map(n => {
+      if (n.id === propertiesModal.nodeId) {
+        return {
+          ...n,
+          data: { ...n.data, ...newProps }
+        };
+      }
+      return n;
+    }));
   };
 
   const handleMenuAction = (action) => {
@@ -94,6 +126,9 @@ function App() {
         };
         setNodes(prev => [...prev, newNode]);
       }
+    }
+    else if (action === 'properties' && type === 'node') {
+      handleOpenProperties(targetId);
     }
     else if (action === 'editLabel' && type === 'edge') {
       const edge = edges.find(e => e.id === targetId);
@@ -141,6 +176,14 @@ function App() {
           onAction={handleMenuAction}
         />
       )}
+
+      {/* [NEW] Properties Modal */}
+      <PropertiesModal
+        isOpen={propertiesModal.isOpen}
+        nodeData={nodes.find(n => n.id === propertiesModal.nodeId)?.data}
+        onClose={() => setPropertiesModal({ isOpen: false, nodeId: null })}
+        onSave={handleSaveProperties}
+      />
 
       <CodeEditor
         isOpen={isCodeOpen}

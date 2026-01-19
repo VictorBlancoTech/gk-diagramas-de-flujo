@@ -93,6 +93,7 @@ export default function CodeEditor({ isOpen, code, onClose, onImport }) {
           font-size: 14px;
           resize: none;
           outline: none;
+          box-sizing: border-box; /* Fix overflow */
         }
         .modal-footer {
           padding: 16px;

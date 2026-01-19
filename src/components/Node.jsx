@@ -129,6 +129,13 @@ export default function Node({ data, onMove, onStartConnect, onCompleteConnect, 
             <div className="handle bottom" onMouseDown={handleHandleMouseDown} onMouseUp={handleMouseUp}></div>
             <div className="handle left" onMouseDown={handleHandleMouseDown} onMouseUp={handleMouseUp}></div>
 
+            {/* Score Badge */}
+            {data.data.scoreMode && (
+                <div className="score-badge">
+                    {data.data.score}
+                </div>
+            )}
+
             <style>{`
         .node {
           position: absolute;
@@ -150,6 +157,25 @@ export default function Node({ data, onMove, onStartConnect, onCompleteConnect, 
           font-size: 1rem;
           box-sizing: border-box; /* Crucial for size calculations */
           pointer-events: auto; /* Re-enable clicks inside the non-interactive container */
+        }
+        
+        .score-badge {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid var(--bg-node);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 30;
         }
         .node-input {
           background: transparent;
@@ -198,12 +224,15 @@ export default function Node({ data, onMove, onStartConnect, onCompleteConnect, 
         
         /* Shapes & Specific Styles */
         
+        /* Shapes & Specific Styles */
+        
         /* Start/End: Green */
         .node.start {
           border-radius: 30px;
           border-color: #10b981; 
         }
         .node.start .handle { background: #10b981; }
+        .node.start .score-badge { background: #10b981; }
 
         /* Process: Default Blue (inherits) */
         .node.process {
@@ -220,6 +249,13 @@ export default function Node({ data, onMove, onStartConnect, onCompleteConnect, 
           transform: rotate(45deg); 
           border: 2px solid #f97316;
           border-radius: 4px;
+        }
+        
+        .node.decision .score-badge { 
+             background: #f97316;
+             transform: rotate(-45deg); /* Counter-rotate to stay upright */
+             bottom: -15px; /* Adjust position for diamond corner */
+             right: -15px;
         }
         
         /* Un-rotate content so text is straight */
