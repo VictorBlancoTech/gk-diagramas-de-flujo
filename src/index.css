@@ -1,0 +1,63 @@
+:root {
+  /* Dynamic Palette - Dark Mode Optimized */
+  --bg-app: #0f172a; /* Slate 900 */
+  --bg-panel: rgba(30, 41, 59, 0.7); /* Slate 800 with opacity */
+  --bg-node: rgba(51, 65, 85, 0.9); /* Slate 700 */
+  
+  --text-primary: #f8fafc; /* Slate 50 */
+  --text-secondary: #94a3b8; /* Slate 400 */
+  
+  --accent-color: #3b82f6; /* Blue 500 */
+  --accent-glow: rgba(59, 130, 246, 0.5);
+  
+  --border-color: rgba(148, 163, 184, 0.1);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  --font-main: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  
+  /* Node Shapes */
+  --node-radius: 8px;
+  --transition-speed: 0.2s;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  overflow: hidden; /* Prevent body scroll, canvas handles it */
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: var(--glass-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-node);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
