@@ -1,15 +1,79 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
 import Canvas from './components/Canvas'
 import CodeEditor from './components/CodeEditor'
 import ContextMenu from './components/ContextMenu'
-import PropertiesModal from './components/PropertiesModal' // [NEW]
+import PropertiesModal from './components/PropertiesModal'
 import { generateMermaid, parseMermaid } from './utils/mermaidHelper'
+import { DiagramStorage } from './utils/storage'
 
 function App() {
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
-  const [selectedId, setSelectedId] = useState(null)
+
+  // Diagram State
+  const [currentDiagramId, setCurrentDiagramId] = useState(null)
+  const [diagramName, setDiagramName] = useState('Untitled Diagram')
+  const [savedDiagrams, setSavedDiagrams] = useState([])
+
+  // Load initial data
+  useEffect(() => {
+    const list = DiagramStorage.getList();
+    setSavedDiagrams(list);
+
+    if (list.length > 0) {
+      // Load most recent
+      const mostRecent = list[0];
+      loadDiagram(mostRecent.id);
+    } else {
+      // Initialize new
+      createNewDiagram();
+    }
+  }, []);
+
+  const createNewDiagram = () => {
+    const newId = crypto.randomUUID();
+    setCurrentDiagramId(newId);
+    setDiagramName('Untitled Diagram');
+    setNodes([]);
+    setEdges([]);
+  };
+
+  const loadDiagram = (id) => {
+    const data = DiagramStorage.load(id);
+    if (data) {
+      setCurrentDiagramId(data.id);
+      setDiagramName(data.name);
+      setNodes(data.nodes || []);
+      setEdges(data.edges || []);
+    }
+  };
+
+  const saveDiagram = () => {
+    if (!currentDiagramId) return;
+    DiagramStorage.save(currentDiagramId, diagramName, nodes, edges);
+    // Refresh list
+    setSavedDiagrams(DiagramStorage.getList());
+    alert('Diagrama guardado correctamente');
+  };
+
+  const deleteDiagram = (id) => {
+    if (confirm('¿Estás seguro de eliminar este diagrama?')) {
+      DiagramStorage.delete(id);
+      const list = DiagramStorage.getList();
+      setSavedDiagrams(list);
+
+      // If deleted current, switch to another or create new
+      if (id === currentDiagramId) {
+        if (list.length > 0) loadDiagram(list[0].id);
+        else createNewDiagram();
+      }
+    }
+  };
+
+  const handleNameChange = (newName) => {
+    setDiagramName(newName);
+  };
 
   // Mermaid Integration State
   const [isCodeOpen, setIsCodeOpen] = useState(false);
@@ -155,7 +219,16 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar onOpenCode={handleOpenCode} />
+      <Sidebar
+        onOpenCode={handleOpenCode}
+        onNew={createNewDiagram}
+        onSave={saveDiagram}
+        diagramName={diagramName}
+        onNameChange={handleNameChange}
+        savedDiagrams={savedDiagrams}
+        onLoad={loadDiagram}
+        onDelete={deleteDiagram}
+      />
       <Canvas
         nodes={nodes}
         edges={edges}

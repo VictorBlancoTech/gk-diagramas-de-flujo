@@ -12,7 +12,7 @@ export const generateMermaid = (nodes, edges) => {
             case 'start':
                 // Mermaid: id((Label)) - aunque start/end suele ser rounded
                 // Usaremos id([Label]) para terminal (stadium shape) o id((Label)) para círculo
-                nodeStr = `${node.id}(([${label}]))`;
+                nodeStr = `${node.id}([${label}])`;
                 break;
             case 'decision':
                 // Mermaid: id{Label}
